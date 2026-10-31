@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="fond" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#363a44"/>
+      <stop offset="1" stop-color="#1b1d22"/>
+    </linearGradient>
+    <linearGradient id="pellicule" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6cb0f5"/>
+      <stop offset="1" stop-color="#3a86d6"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#fond)"/>
+  <!-- la pellicule d'exporter.svg, agrandie : perforations en rectangles arrondis (3 de chaque côté,
+       rangées centrées à y = 49,6 / 100 / 150,4), découpées dans la bande (evenodd)  -->
+  <path fill="url(#pellicule)" fill-rule="evenodd" d="M62 22h132a6 6 0 0 1 6 6v144a6 6 0 0 1 -6 6h-132a6 6 0 0 1 -6 -6v-144a6 6 0 0 1 6 -6zM73.5 41.6h15a4.5 4.5 0 0 1 4.5 4.5v7a4.5 4.5 0 0 1 -4.5 4.5h-15a4.5 4.5 0 0 1 -4.5 -4.5v-7a4.5 4.5 0 0 1 4.5 -4.5zM73.5 92h15a4.5 4.5 0 0 1 4.5 4.5v7a4.5 4.5 0 0 1 -4.5 4.5h-15a4.5 4.5 0 0 1 -4.5 -4.5v-7a4.5 4.5 0 0 1 4.5 -4.5zM73.5 142.4h15a4.5 4.5 0 0 1 4.5 4.5v7a4.5 4.5 0 0 1 -4.5 4.5h-15a4.5 4.5 0 0 1 -4.5 -4.5v-7a4.5 4.5 0 0 1 4.5 -4.5zM167.5 41.6h15a4.5 4.5 0 0 1 4.5 4.5v7a4.5 4.5 0 0 1 -4.5 4.5h-15a4.5 4.5 0 0 1 -4.5 -4.5v-7a4.5 4.5 0 0 1 4.5 -4.5zM167.5 92h15a4.5 4.5 0 0 1 4.5 4.5v7a4.5 4.5 0 0 1 -4.5 4.5h-15a4.5 4.5 0 0 1 -4.5 -4.5v-7a4.5 4.5 0 0 1 4.5 -4.5zM167.5 142.4h15a4.5 4.5 0 0 1 4.5 4.5v7a4.5 4.5 0 0 1 -4.5 4.5h-15a4.5 4.5 0 0 1 -4.5 -4.5v-7a4.5 4.5 0 0 1 4.5 -4.5zM110.4 40h35.2a4 4 0 0 1 4 4v112a4 4 0 0 1 -4 4h-35.2a4 4 0 0 1 -4 -4v-112a4 4 0 0 1 4 -4z"/>
+  <!-- lecture, dans l'image centrale : la pointe à la hauteur des perforations du milieu (y = 8 × 12 + 4 = 100) -->
+  <path d="M117 74v52l26-26z" fill="#ffffff"/>
+  <!-- les pistes de la timeline et la tête de lecture -->
+  <rect x="36" y="186" width="74" height="18" rx="6" fill="#E8A33D"/>
+  <rect x="118" y="186" width="52" height="18" rx="6" fill="#5BBF7A"/>
+  <rect x="178" y="186" width="42" height="18" rx="6" fill="#C46BD6"/>
+  <rect x="60" y="212" width="96" height="14" rx="5" fill="#3FC1C0"/>
+  <rect x="164" y="212" width="56" height="14" rx="5" fill="#3FC1C0" opacity=".6"/>
+  <rect x="140" y="178" width="5" height="54" rx="2.5" fill="#ff5c5c"/>
+</svg>

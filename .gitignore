@@ -1,0 +1,12 @@
+# environnement Python et caches
+.venv/
+__pycache__/
+*.pyc
+
+# construction (build.ps1 : PyInstaller, Inno Setup)
+build/
+dist/
+
+# données d'une version portable (préférences, aperçus)
+donnees/
+portable.txt
