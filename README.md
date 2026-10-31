@@ -5,6 +5,8 @@ référence : ffmontage le lit, affiche ses réglages dans un panneau et ses tem
 et lance l'export. Ce que vous changez à la souris (un fondu, la position d'un titre, le début d'une musique) est
 réécrit dans le script, qui fonctionne toujours seul.
 
+![ffmontage ouvert sur la « Ballade des pendus » : réglages, aperçu avec grille d'accrochage, script et timeline](docs/interface.png)
+
 Prérequis : Windows, Python 3.12 (`pip install -r requirements.txt`) et ffmpeg dans le PATH. Licence MIT (voir
 `LICENSE`).
 
