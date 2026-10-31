@@ -1,63 +1,67 @@
-# ffmontage — table de montage pour scripts ffmpeg
+# ffmontage — an editing desk for ffmpeg scripts
 
-**ffmontage** est une table de montage pour des films fabriqués par des scripts Python et ffmpeg. Le script reste la
-référence : ffmontage le lit, affiche ses réglages dans un panneau et ses temps sur une timeline, calcule des aperçus
-et lance l'export. Ce que vous changez à la souris (un fondu, la position d'un titre, le début d'une musique) est
-réécrit dans le script, qui fonctionne toujours seul.
+[Lire en français](README.fr.md)
 
-![ffmontage ouvert sur la « Ballade des pendus » : réglages, aperçu avec grille d'accrochage, script et timeline](docs/interface.png)
+**ffmontage** is a video editing desk for films made by Python scripts and ffmpeg. The script remains the source of
+truth: ffmontage reads it, shows its settings in a panel and its timings on a timeline, renders previews and runs the
+export. Whatever you change with the mouse (a fade, the position of a title, the start of a piece of music) is written
+back into the script, which still runs on its own.
 
-Prérequis : Windows, Python 3.12 (`pip install -r requirements.txt`) et ffmpeg dans le PATH. Licence MIT (voir
+![ffmontage open on the « Ballade des pendus »: settings, preview with snapping grid, script and timeline](docs/interface.png)
+
+Requirements: Windows, Python 3.12 (`pip install -r requirements.txt`) and ffmpeg in the PATH. MIT licence (see
 `LICENSE`).
 
-**Sécurité** : ffmontage exécute les scripts qu'on lui ouvre (c'est ainsi qu'il trouve leurs commandes ffmpeg).
-Ouvrir un script, c'est lancer un programme : n'ouvrez que des scripts dont vous connaissez la provenance.
+The interface and the script convention are in French: menu names, panel labels and tags (`@Piste.debut`,
+`# ── RÉGLAGES`…) are quoted below as they appear, with their meaning.
 
-L'onglet **Script** est un éditeur du script (coloration Python, numéros de ligne). C'est la version de travail : le
-panneau et la timeline y écrivent leurs changements, et on peut y taper directement ; un seul historique sert à tout
-annuler. Dans la marge, la couleur de la piste de chaque ligne étiquetée ; pendant la lecture, les valeurs des blocs
-sous la tête sont surlignées (pour une liste, le seul élément concerné) ; un clic sur un bloc montre sa valeur, et le
-curseur sur un réglage fait ressortir son bloc.
+**Security**: ffmontage runs the scripts you open (that is how it finds their ffmpeg commands). Opening a script means
+running a program: only open scripts whose origin you know.
 
-Les modifications restent en mémoire (● dans le titre ; aperçus et export utilisent déjà cette version) jusqu'à
-**Enregistrer** (Ctrl+S), qui écrit le script et affiche les réglages mis à jour et le nombre d'autres lignes
-modifiées. Si le script est modifié dans un autre éditeur entre-temps, la table demande quelle version garder.
+The **Script** tab is an editor for the script (Python highlighting, line numbers). It is the working copy: the panel
+and the timeline write their changes into it, and you can type in it directly; a single history undoes everything. The
+margin shows the track colour of each tagged line; during playback, the values of the blocks under the playhead are
+highlighted (for a list, only the element concerned); clicking a block shows its value, and putting the cursor on a
+setting highlights its block.
 
-Onglet **Fichiers** : les fichiers que le script lit et écrit (notés pendant sa lecture, quand il les ouvre avec
-`open()`), et ceux de la commande ffmpeg. Double-clic : un texte lu (des vers…) s'ouvre dans un onglet modifiable
-(Ctrl+S l'enregistre et relit le script) ; un texte écrit (un `.ass`) en lecture seule ; le reste avec le logiciel de
-Windows. Un fichier lu modifié ailleurs fait aussi relire le script.
+Changes stay in memory (● in the title; previews and export already use this version) until **Enregistrer** (Save,
+Ctrl+S), which writes the script and reports the updated settings and the number of other changed lines. If the script
+was changed in another editor in the meantime, ffmontage asks which version to keep.
 
-Onglets : **Graphe** (entrées, chaînes de filtres et sortie de la commande ffmpeg, variables du script),
-**Commande** (la commande ffmpeg complète, lisible), **Journal** (messages du script, de ffmpeg, enregistrements).
+**Fichiers** (Files) tab: the files the script reads and writes (recorded while it runs, when it opens them with
+`open()`), and those of the ffmpeg command. Double-click: a text it reads (verses…) opens in an editable tab (Ctrl+S
+saves it and re-reads the script); a text it writes (a `.ass`) opens read-only; anything else opens with the Windows
+application. A read file changed elsewhere also makes the script be read again.
 
-## Nouveau projet
+Other tabs: **Graphe** (inputs, filter chains and output of the ffmpeg command, script variables), **Commande** (the
+full ffmpeg command, readable), **Journal** (log: messages from the script, from ffmpeg, saves).
 
-Mettre les vidéos, photos et la musique dans un dossier (« été 2026 »), puis **Fichier → Nouveau projet…** (Ctrl+N)
-et choisir ce dossier. La table y écrit « été 2026 film.py », copie de `modeles/film.py` :
+## New project
 
-- les vidéos et photos du dossier et de ses sous-dossiers (sauf ceux qui commencent par `.` ou `_`), dans l'ordre
-  alphabétique de leur nom (numéroter : `01 …`, `02 …`), enchaînées par un fondu ; chacune mise à la taille du film
-  (bandes de `COULEUR_FOND` si sa forme diffère) ;
-- un titre au début (texte, police, taille, couleur, position, temps) ;
-- la première musique du dossier, ou celle de `MUSIQUE`, avec volume, retard et fondu final ;
-- le film « été 2026_film.mp4 » dans le dossier.
+Put the videos, photos and music in a folder (« été 2026 »), then **Fichier → Nouveau projet…** (File → New project,
+Ctrl+N) and choose that folder. ffmontage writes « été 2026 film.py » into it, a copy of `modeles/film.py`:
 
-Des médias ajoutés ensuite : F5 pour relire. Le script est un point de départ, à modifier dans l'onglet Script.
+- the videos and photos of the folder and its subfolders (except those starting with `.` or `_`), in alphabetical
+  order of their names (number them: `01 …`, `02 …`), linked by crossfades; each one fitted to the film size (bars of
+  `COULEUR_FOND` if its shape differs);
+- a title at the start (text, font, size, colour, position, timing);
+- the first music file of the folder, or the one in `MUSIQUE`, with volume, delay and final fade;
+- the film « été 2026_film.mp4 » in the folder.
 
-## Lancer
+Media added later: F5 to re-read. The script is a starting point, to be edited in the Script tab.
 
-- Depuis les sources : `Lancer.bat` (ou `.venv\Scripts\python TableDeMontage.py [script.py]`).
-- Version compilée : `TableDeMontage.exe [script.py]`.
+## Running
 
-Raccourcis : Ctrl+N nouveau projet · Ctrl+O ouvrir · Ctrl+S enregistrer · F5 recharger · Ctrl+Z annuler · Ctrl+Y rétablir · F6 aperçu · Espace lecture/pause · Ctrl+E exporter · Échap arrêter ·
-Ctrl+molette sur la timeline : zoom.
-Tête de lecture (après un clic sur la timeline ou la vidéo) : ←/→ une image · Maj+←/→ 1 s · Ctrl+←/→ 10 s ·
-Début/Fin.
+- From the sources: `Lancer.bat` (or `.venv\Scripts\python TableDeMontage.py [script.py]`).
+- Built version: `TableDeMontage.exe [script.py]`.
 
-## La convention du script
+Shortcuts: Ctrl+N new project · Ctrl+O open · Ctrl+S save · F5 reload · Ctrl+Z undo · Ctrl+Y redo · F6 preview ·
+Space play/pause · Ctrl+E export · Esc stop · Ctrl+wheel on the timeline: zoom.
+Playhead (after clicking the timeline or the video): ←/→ one frame · Shift+←/→ 1 s · Ctrl+←/→ 10 s · Home/End.
 
-Un bloc de réglages en tête de script, entre deux lignes repères :
+## The script convention
+
+A settings block at the top of the script, between two marker lines:
 
 ```python
 # ── RÉGLAGES ──────────────────────────────
@@ -71,93 +75,93 @@ VERS = [(146.0, 151.9), (152.4, 157.1)] # (début, fin) de chaque distique @Poè
 # ── FIN RÉGLAGES ──────────────────────────
 ```
 
-- **Valeurs littérales** (nombre, texte, booléen, liste…) : modifiables dans le panneau. Le reste de la ligne, et du
-  fichier, n'est jamais touché.
-- **Valeurs calculées** à partir des réglages précédents (opérations, `round`, `min`, `max`, f-strings) : affichées,
-  et suivies en direct sur la timeline pendant un glissement.
-- `# ── Titre` dans le bloc : une section du panneau, titrée par son premier mot ou groupe de mots (ce qui suit
-  « ( », « : » ou « — » va dans la bulle d'aide).
-- Le commentaire de la ligne (ou les lignes de commentaire juste au-dessus), les pistes reliées et la valeur
-  d'aperçu sont dans la bulle d'aide du nom du réglage. Un commentaire qui commence par « s · », ou une valeur
-  reliée à un début, une fin, une durée ou un repère, affiche « s » dans la case du nombre.
+(`RÉGLAGES` = settings, `FIN RÉGLAGES` = end of settings; variable names and comments are free.)
 
-Étiquettes dans le commentaire :
+- **Literal values** (number, text, boolean, list…): editable in the panel. The rest of the line, and of the file, is
+  never touched.
+- **Values computed** from earlier settings (arithmetic, `round`, `min`, `max`, f-strings): displayed, and followed
+  live on the timeline while dragging.
+- `# ── Titre` inside the block: a section of the panel, titled by its first word or group of words (whatever
+  follows « ( », « : » or « — » goes into the tooltip).
+- The comment of the line (or the comment lines just above it), the linked tracks and the preview value are in the
+  tooltip of the setting's name. A comment starting with « s · », or a value linked to a start, an end, a duration or
+  a marker, shows « s » (seconds) in the number field.
 
-| Étiquette | Effet |
+Tags in the comment:
+
+| Tag | Effect |
 |---|---|
-| `[min..max]` | bornes du champ ; curseur si les deux sont données |
-| `@Piste.debut`, `.fin`, `.duree` | bloc sur la piste « Piste » de la timeline (secondes depuis le début du film) |
-| `@Piste.marque` | un repère |
-| `@Piste.intervalles` | une liste de paires (début, fin) : un bloc par paire |
-| `@Piste.marques` | une liste de temps : un repère par valeur |
-| `@Piste.texte`, `.police`, `.taille`, `.couleur`, `.position` | l'apparence d'un texte du film : liste des polices, choix de couleur (`"#RRGGBB"`), X / Y ; la position (x, y) en pixels de l'image a une poignée sur l'aperçu, à faire glisser (aimant au centre ; Maj : sans aimant) |
-| `@couleur`, `@police`, `@position` | les mêmes outils pour une valeur sans piste |
-| `@fichier`, `@dossier` | bouton de choix (chemin relatif au `@dossier` du bloc, sinon au dossier du script) |
-| `@apercu=valeur` | valeur utilisée seulement pour les aperçus (ex. moins d'images par seconde) |
-| `@nom=Nom_affiché` | le nom du réglage dans le panneau, à la place du nom de la variable (les `_` deviennent des espaces) ; pour `W, H = …` : `@nom=Largeur,Hauteur` |
+| `[min..max]` | bounds of the field; a slider if both are given |
+| `@Piste.debut`, `.fin`, `.duree` | start, end, duration: a block on the timeline track « Piste » (seconds from the start of the film) |
+| `@Piste.marque` | a marker |
+| `@Piste.intervalles` | a list of (start, end) pairs: one block per pair |
+| `@Piste.marques` | a list of times: one marker per value |
+| `@Piste.texte`, `.police`, `.taille`, `.couleur`, `.position` | text, font, size, colour, position of a text in the film: font list, colour picker (`"#RRGGBB"`), X / Y; the position (x, y) in image pixels has a handle on the preview, to drag (grid button: snapping grid and safe area; Shift: no snapping) |
+| `@couleur`, `@police`, `@position` | the same tools for a value without a track |
+| `@fichier`, `@dossier` | file / folder picker (path relative to the block's `@dossier`, otherwise to the script's folder) |
+| `@apercu=valeur` | value used only for previews (e.g. fewer frames per second) |
+| `@nom=Nom_affiché` | the setting's name in the panel, instead of the variable name (`_` become spaces); for `W, H = …`: `@nom=Largeur,Hauteur` |
 
-Une valeur peut porter plusieurs étiquettes (`@Animation.debut @Musique.debut`). Les `_` des noms de piste
-s'affichent comme des espaces.
+A value can carry several tags (`@Animation.debut @Musique.debut`). The `_` in track names are shown as spaces.
 
-**Hors du bloc**, une ligne en MAJUSCULES au premier niveau du script peut aussi porter des étiquettes
-(`BOUCLE, PIANO = R["…"], R["…"]  # @Musique.marque`) : la valeur est celle qu'avait la variable à la fin du script
-(lecture seule). C'est ce qui permet d'afficher des temps lus dans un `.mid`.
+**Outside the block**, an UPPERCASE line at the top level of the script can also carry tags
+(`BOUCLE, PIANO = R["…"], R["…"]  # @Musique.marque`): the value is the one the variable had at the end of the
+script (read-only). This is how times read from a `.mid` file can be shown.
 
-## Ce que fait la table
+## What ffmontage does
 
-- **Lecture du script** (à l'ouverture et après chaque modification) : le script est exécuté dans un processus
-  séparé, mais ses appels à ffmpeg (par `subprocess`) sont interceptés au lieu d'être exécutés. La table en tire le
-  graphe de filtres, la commande, les repères de temps des filtres (`xfade`, `fade`, `adelay`, sous-titres `.ass`…)
-  et les valeurs des variables en MAJUSCULES. Le reste du script s'exécute vraiment : les fichiers qu'il écrit avant
-  ffmpeg (un `.ass`, des textures…) sont écrits.
-- **Aperçu** : la dernière commande ffmpeg, encodée en `ultrafast`, vers un fichier temporaire ; le film entier ou un
-  extrait depuis la tête de lecture. ffmpeg doit calculer tout ce qui précède l'extrait : plus il est loin, plus c'est
-  long ; `@apercu=` aide.
-- **Export** : le script lancé normalement, avec la progression de ffmpeg.
-- Le script est surveillé : modifié dans un éditeur, il est relu.
+- **Reading the script** (on opening and after each change): the script runs in a separate process, but its calls to
+  ffmpeg (through `subprocess`) are intercepted instead of being executed. ffmontage extracts the filter graph, the
+  command, the timings found in the filters (`xfade`, `fade`, `adelay`, `.ass` subtitles…) and the values of the
+  UPPERCASE variables. The rest of the script really runs: the files it writes before ffmpeg (a `.ass`, textures…)
+  are written.
+- **Preview**: the last ffmpeg command, encoded `ultrafast` into a temporary file; the whole film or an excerpt from
+  the playhead. ffmpeg has to compute everything before the excerpt: the further it is, the longer it takes;
+  `@apercu=` helps.
+- **Export**: the script run normally, with ffmpeg's progress.
+- The script is watched: changed in an editor, it is read again.
 
-Limites : les appels à ffmpeg faits autrement que par `subprocess` (`os.system`…) ne sont pas vus ; une commande
-préparatoire qui reçoit ses données sur l'entrée standard n'est pas rejouée pour l'aperçu.
+Limits: calls to ffmpeg made other than through `subprocess` (`os.system`…) are not seen; a preparatory command fed
+through standard input is not replayed for the preview.
 
-## Construire l'exécutable
+## Building the executable
 
-`build.ps1` (PyInstaller, puis Inno Setup 6 s'il est installé) produit dans `dist\` :
+`build.ps1` (PyInstaller, then Inno Setup 6 if installed) produces in `dist\`:
 
-- `TableDeMontage\` : `TableDeMontage.exe`, `lanceur.exe` (exécute les scripts, avec Python, numpy et mido
-  embarqués), `bin\ffmpeg.exe` et `bin\ffprobe.exe` ;
-- `TableDeMontage-portable.zip` : la même chose avec `portable.txt` (données à côté de l'exe) ;
-- `TableDeMontage-setup-<version>.exe` : l'installateur (ex. `TableDeMontage-setup-1.0.0.exe`).
+- `TableDeMontage\`: `TableDeMontage.exe`, `lanceur.exe` (runs the scripts, with Python, numpy and mido bundled),
+  `bin\ffmpeg.exe` and `bin\ffprobe.exe`;
+- `TableDeMontage-portable.zip`: the same with `portable.txt` (data stored next to the exe);
+- `TableDeMontage-setup-<version>.exe`: the installer (e.g. `TableDeMontage-setup-1.0.0.exe`).
 
-Version : `MAJEUR.MINEUR.CORRECTIF`, écrite seulement dans `tablemontage/__init__.py` (titre de la fenêtre,
-installateur) : correctif +1 pour une correction, mineur +1 pour une nouvelle fonction, majeur +1 si d'anciens
-scripts ou réglages ne marchent plus.
+Version: `MAJOR.MINOR.PATCH`, written only in `tablemontage/__init__.py` (window title, installer): patch +1 for a
+fix, minor +1 for a new feature, major +1 if older scripts or settings stop working.
 
-Un module dont un script a besoin doit être ajouté à `tablemontage/modules_scripts.py` avant de recompiler.
-ffmpeg avec libx264 est sous licence GPL : pour redistribuer l'exécutable avec `bin\ffmpeg.exe`, il faut respecter
-la GPL (indiquer où trouver les sources de ffmpeg).
+A module a script needs must be added to `tablemontage/modules_scripts.py` before rebuilding. ffmpeg with libx264 is
+GPL-licensed: to redistribute the executable with `bin\ffmpeg.exe`, you must comply with the GPL (say where to find
+ffmpeg's sources).
 
-## Organisation
+## Layout
 
-| Fichier | Rôle |
+| File | Role |
 |---|---|
-| `TableDeMontage.py`, `lanceur.py` | points d'entrée (interface, exécution des scripts) |
-| `tablemontage/application.py` | démarrage : thème sombre, icône, fenêtre |
-| `tablemontage/fenetre.py` | la fenêtre : actions, onglets, aperçu, export, enregistrement |
-| `tablemontage/panneau.py` | le panneau des réglages |
-| `tablemontage/timeline.py` | la timeline : pistes, sons, médias, courbes, transitions |
-| `tablemontage/vue_apercu.py`, `transport.py` | l'aperçu (poignées des textes, grille) et sa barre de transport |
-| `tablemontage/editeur.py`, `fichiers.py` | l'onglet Script, l'onglet Fichiers et les onglets de fichiers texte |
-| `tablemontage/reglages.py` | lecture et réécriture du bloc de réglages |
-| `tablemontage/fichier_texte.py` | lire et réécrire un fichier texte sans changer son BOM, ses fins de ligne, son encodage |
-| `tablemontage/lanceur.py` | exécution d'un script : capture des commandes ffmpeg ou export |
-| `tablemontage/ffmpeg_analyse.py` | analyse d'une commande ffmpeg, commande d'aperçu |
-| `tablemontage/son.py` | formes d'onde des sons |
-| `tablemontage/taches.py` | processus en arrière-plan (lanceur, ffmpeg) |
-| `tablemontage/projet.py`, `modeles/film.py` | « Nouveau projet » et son script de départ |
-| `tablemontage/chemins.py` | chemins valables en sources comme en exécutable |
-| `tablemontage/modules_scripts.py` | modules embarqués dans l'exécutable pour les scripts de film |
-| `icones/`, `tablemontage/icones.py` | icônes SVG 16×16 en `currentColor` (style du mixeur), colorées au chargement |
-| `outils/faire_icone.py` | fabrique `application.ico` et `.png` à partir de `application.svg` |
+| `TableDeMontage.py`, `lanceur.py` | entry points (interface, running scripts) |
+| `tablemontage/application.py` | start-up: dark theme, icon, window |
+| `tablemontage/fenetre.py` | the window: actions, tabs, preview, export, saving |
+| `tablemontage/panneau.py` | the settings panel |
+| `tablemontage/timeline.py` | the timeline: tracks, sounds, media, curves, transitions |
+| `tablemontage/vue_apercu.py`, `transport.py` | the preview (text handles, grid) and its transport bar |
+| `tablemontage/editeur.py`, `fichiers.py` | the Script tab, the Files tab and the text file tabs |
+| `tablemontage/reglages.py` | reading and rewriting the settings block |
+| `tablemontage/fichier_texte.py` | reading and rewriting a text file without changing its BOM, line endings or encoding |
+| `tablemontage/lanceur.py` | running a script: capturing ffmpeg commands, or export |
+| `tablemontage/ffmpeg_analyse.py` | analysis of an ffmpeg command, preview command |
+| `tablemontage/son.py` | sound waveforms |
+| `tablemontage/taches.py` | background processes (launcher, ffmpeg) |
+| `tablemontage/projet.py`, `modeles/film.py` | « New project » and its starter script |
+| `tablemontage/chemins.py` | paths valid from sources and from the executable |
+| `tablemontage/modules_scripts.py` | modules bundled in the executable for film scripts |
+| `icones/`, `tablemontage/icones.py` | 16×16 SVG icons in `currentColor`, coloured when loaded |
+| `outils/faire_icone.py` | builds `application.ico` and `.png` from `application.svg` |
 
-Annuler / Rétablir portent sur tout le texte du script (un seul historique) : les changements du panneau et de la
-timeline (une suite rapide de retouches du même réglage compte pour une) comme la frappe dans l'onglet Script.
+Undo / Redo cover the whole text of the script (a single history): changes from the panel and the timeline (a quick
+series of tweaks to the same setting counts as one) as well as typing in the Script tab.

@@ -18,7 +18,7 @@ foreach ($outil in "ffmpeg", "ffprobe") {
     $source = (Get-Command $outil -ErrorAction SilentlyContinue).Source
     if ($source) { Copy-Item $source "$app\bin\" -Force } else { Write-Warning "$outil introuvable dans le PATH : à copier dans $app\bin" }
 }
-Copy-Item README.md "$app\" -Force
+Copy-Item README.md, README.fr.md "$app\" -Force
 
 # version portable
 Set-Content "$app\portable.txt" "Présence de ce fichier : les aperçus et préférences sont rangés dans le dossier « donnees »." -Encoding utf8
