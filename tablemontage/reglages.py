@@ -28,6 +28,8 @@ Seules les valeurs littérales (nombre, texte, booléen, liste…) sont modifiab
 des réglages précédents (opérations, round/min/max…) et seulement affiché.
 Les étiquettes @Piste.role marchent aussi sur les lignes hors du bloc (en MAJUSCULES, au premier niveau du script) :
 leur valeur, inconnue avant l'exécution, est celle qu'avait la variable à la fin du script ; elle n'est pas modifiable.
+    @resultat                          (hors du bloc) la valeur s'affiche aussi dans le panneau, section « Résultats
+                                       du script » (ex. le nombre d'images trouvées)
 """
 import ast
 import io
@@ -48,6 +50,7 @@ ROLES = {"debut": "debut", "début": "debut", "fin": "fin", "duree": "duree", "d
          "texte": "texte", "police": "police", "taille": "taille", "couleur": "couleur", "position": "position"}
 ROLES_TEMPS = {"debut", "fin", "duree", "marque", "intervalles", "marques"}      # ceux de la timeline
 CHOIX = {"fichier", "dossier", "couleur", "police", "position"}                    # un outil dans le panneau
+RESULTAT = {"resultat", "résultat"}                                                 # hors du bloc : dans le panneau
 MAJUSCULES = re.compile(r"^[A-Z][A-Z0-9_]*$")
 
 
@@ -67,6 +70,7 @@ class Reglage:
     etiquettes: list = field(default_factory=list)   # [(piste, role)]
     choix: str | None = None        # "fichier", "dossier", "couleur", "police" ou "position"
     hors_bloc: bool = False         # ligne étiquetée hors du bloc : valeur connue seulement après exécution
+    resultat: bool = False          # hors du bloc, @resultat : affiché dans le panneau (Résultats du script)
     apercu: str | None = None       # texte de la valeur à utiliser pour les aperçus
     libelle: str | None = None      # nom affiché dans le panneau (@nom=…), sinon le nom de la variable
     elements: list = field(default_factory=list)     # positions des éléments d'une liste ou d'un tuple
@@ -88,6 +92,11 @@ class Bloc:
     def reglages(self):
         """Les réglages du bloc (ceux du panneau)."""
         return [e for e in self.elements if isinstance(e, Reglage) and not e.hors_bloc]
+
+    @property
+    def resultats(self):
+        """Les lignes hors du bloc étiquetées @resultat (section « Résultats du script » du panneau)."""
+        return [e for e in self.elements if isinstance(e, Reglage) and e.resultat]
 
     @property
     def tous(self):
@@ -220,7 +229,7 @@ def lire(texte):
         else:
             continue
         mini = maxi = choix = apercu = None
-        etiquettes = []
+        etiquettes, resultat = [], False
         if m := APERCU.search(com):
             apercu = m.group(1)
             com = APERCU.sub("", com)
@@ -233,6 +242,8 @@ def lire(texte):
         for m in ETIQUETTE.finditer(com):
             if m.group(1).lower() in CHOIX and not m.group(2):
                 choix = m.group(1).lower()
+            elif m.group(1).lower() in RESULTAT and not m.group(2):
+                resultat = hors_bloc
             elif m.group(2) and m.group(2).lower() in ROLES:
                 role = ROLES[m.group(2).lower()]
                 etiquettes.append((m.group(1), role))
@@ -242,7 +253,7 @@ def lire(texte):
         for k, (nom, valeur) in enumerate(paires):
             libelle = (libelles[k] if k < len(libelles) else None) if len(libelles) > 1 else \
                 (libelles[0] if libelles else None)
-            if hors_bloc and not (MAJUSCULES.match(nom) and etiquettes):
+            if hors_bloc and not (MAJUSCULES.match(nom) and (etiquettes or resultat)):
                 continue
             if valeur is None:
                 source, position = ast.get_source_segment(texte, n.value) or "", ()
@@ -254,7 +265,7 @@ def lire(texte):
                             for e in getattr(valeur, "elts", [])] if isinstance(valeur, (ast.List, ast.Tuple)) else []
             elements.append(Reglage(nom, n.lineno, source, valeur, _litteral(valeur) and not hors_bloc, position,
                                     commentaire=propre, mini=mini, maxi=maxi, etiquettes=list(etiquettes), choix=choix,
-                                    hors_bloc=hors_bloc, apercu=apercu, libelle=libelle or None,
+                                    hors_bloc=hors_bloc, resultat=resultat, apercu=apercu, libelle=libelle or None,
                                     elements=elements_pos))
     for i in range(debut + 1, fin):
         if i not in occupees and (m := SECTION.match(lignes[i - 1])) and m.group(1):

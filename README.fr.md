@@ -96,6 +96,7 @@ VERS = [(146.0, 151.9), (152.4, 157.1)] # (début, fin) de chaque distique @Poè
 | `@couleur`, `@police`, `@position` | les mêmes outils pour une valeur sans piste |
 | `@fichier`, `@dossier` | bouton de choix (chemin relatif au `@dossier` du bloc, sinon au dossier du script) |
 | `@apercu=valeur` | valeur utilisée seulement pour les aperçus (ex. moins d'images par seconde) |
+| `@resultat` | (hors du bloc) la valeur en fin d'exécution, dans le panneau sous « Résultats du script » |
 | `@nom=Nom_affiché` | le nom du réglage dans le panneau, à la place du nom de la variable (les `_` deviennent des espaces) ; pour `W, H = …` : `@nom=Largeur,Hauteur` |
 
 Une valeur peut porter plusieurs étiquettes (`@Animation.debut @Musique.debut`). Les `_` des noms de piste
@@ -103,7 +104,9 @@ s'affichent comme des espaces.
 
 **Hors du bloc**, une ligne en MAJUSCULES au premier niveau du script peut aussi porter des étiquettes
 (`BOUCLE, PIANO = R["…"], R["…"]  # @Musique.marque`) : la valeur est celle qu'avait la variable à la fin du script
-(lecture seule). C'est ce qui permet d'afficher des temps lus dans un `.mid`.
+(lecture seule). C'est ce qui permet d'afficher des temps lus dans un `.mid`. Avec l'étiquette `@resultat`, la
+valeur s'affiche aussi dans le panneau, sous « Résultats du script » (`NB_IMAGES = len(images)  # @resultat` : ce
+que le script a trouvé, sans ouvrir le journal).
 
 ## Ce que fait la table
 

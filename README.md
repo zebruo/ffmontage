@@ -100,13 +100,16 @@ Tags in the comment:
 | `@couleur`, `@police`, `@position` | the same tools for a value without a track |
 | `@fichier`, `@dossier` | file / folder picker (path relative to the block's `@dossier`, otherwise to the script's folder) |
 | `@apercu=valeur` | value used only for previews (e.g. fewer frames per second) |
+| `@resultat` | (outside the block) the value at the end of the run, in the panel under "Résultats du script" |
 | `@nom=Nom_affiché` | the setting's name in the panel, instead of the variable name (`_` become spaces); for `W, H = …`: `@nom=Largeur,Hauteur` |
 
 A value can carry several tags (`@Animation.debut @Musique.debut`). The `_` in track names are shown as spaces.
 
 **Outside the block**, an UPPERCASE line at the top level of the script can also carry tags
 (`BOUCLE, PIANO = R["…"], R["…"]  # @Musique.marque`): the value is the one the variable had at the end of the
-script (read-only). This is how times read from a `.mid` file can be shown.
+script (read-only). This is how times read from a `.mid` file can be shown. With the `@resultat` tag, the value is
+also shown in the panel, under "Résultats du script" (`NB_IMAGES = len(images)  # @resultat`: what the script found,
+without opening the log).
 
 ## What ffmontage does
 

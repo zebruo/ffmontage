@@ -78,12 +78,13 @@ class PanneauReglages(QScrollArea):
             return
         signature = tuple((type(e).__name__, getattr(e, "nom", getattr(e, "titre", "")),
                            getattr(e, "modifiable", None), type(getattr(e, "valeur", None)).__name__)
-                          for e in bloc.elements if not getattr(e, "hors_bloc", False))
+                          for e in bloc.elements if not getattr(e, "hors_bloc", False)) + \
+            tuple(r.nom for r in bloc.resultats)
         if signature != self._signature:
             self._construire(bloc)
             self._signature = signature
         else:
-            for r in bloc.reglages:
+            for r in bloc.reglages + bloc.resultats:
                 if r.nom in self._poseurs:
                     self._poseurs[r.nom](r)
 
@@ -94,7 +95,10 @@ class PanneauReglages(QScrollArea):
         grille.setVerticalSpacing(6)
         self._poseurs = {}
         ligne = 0
-        for e in bloc.elements:
+        # les réglages du bloc, puis les valeurs @resultat lues à la fin du script
+        resultats = [Section("Résultats du script (valeurs en fin d'exécution)", 0)] + bloc.resultats \
+            if bloc.resultats else []
+        for e in [e for e in bloc.elements if not getattr(e, "hors_bloc", False)] + resultats:
             if isinstance(e, Section):
                 titre = QLabel(_titre_court(e.titre))
                 titre.setStyleSheet("font-weight: bold; font-size: 7.5pt; color: #b9c0cc; "
@@ -103,8 +107,6 @@ class PanneauReglages(QScrollArea):
                     titre.setToolTip(e.titre)
                 grille.addWidget(titre, ligne, 0, 1, 2)
                 ligne += 1
-                continue
-            if e.hors_bloc:
                 continue
             nom = QLabel(e.libelle or e.nom)
             nom.setStyleSheet(("color: #d7dae0;" if e.modifiable else "color: #8a8f9c;") + " font-size: 7.5pt;")
@@ -137,8 +139,9 @@ class PanneauReglages(QScrollArea):
 
             def poser(r):
                 valeur = html.escape(_fmt(r.valeur)) if r.connu else "?"
-                etiquette.setText(f"<span style='color:#c8ccd4'>{valeur}</span>"
-                                  f"&nbsp;&nbsp;<span style='color:#6b7080'>= {html.escape(r.source)}</span>")
+                formule = "" if r.resultat else \
+                    f"&nbsp;&nbsp;<span style='color:#6b7080'>= {html.escape(r.source)}</span>"   # un résultat : la valeur seule
+                etiquette.setText(f"<span style='color:#c8ccd4'>{valeur}</span>{formule}")
             poser(r)
             return etiquette, poser
 
