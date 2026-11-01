@@ -55,7 +55,11 @@ Des médias ajoutés ensuite : F5 pour relire. Le script est un point de départ
 Raccourcis : Ctrl+N nouveau projet · Ctrl+O ouvrir · Ctrl+S enregistrer · F5 recharger · Ctrl+Z annuler · Ctrl+Y rétablir · F6 aperçu · Espace lecture/pause · Ctrl+E exporter · Échap arrêter ·
 Ctrl+molette sur la timeline : zoom.
 Tête de lecture (après un clic sur la timeline ou la vidéo) : ←/→ une image · Maj+←/→ 1 s · Ctrl+←/→ 10 s ·
-Début/Fin.
+Début/Fin. Sous l'aperçu, TEMPS et IMAGE : le numéro de l'image sous la tête, à partir de 1 (d'après `IPS`), pour
+retrouver l'image dans le logiciel qui l'a rendue ; si le script définit `PAS_IMAGES` (images rendues de N en N),
+celle qui est à l'écran : 1, 11, 21… ; avec `NB_IMAGES` (numéro de la dernière image), il reste sur elle pendant
+une fin tenue ; avec `NUMEROS_IMAGES` (liste des images rendues, le montage commençant à la première : une portion
+150-250…), leurs vrais numéros, et « noir » dans les trous.
 
 ## La convention du script
 

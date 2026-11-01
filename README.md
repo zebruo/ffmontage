@@ -58,6 +58,11 @@ Media added later: F5 to re-read. The script is a starting point, to be edited i
 Shortcuts: Ctrl+N new project · Ctrl+O open · Ctrl+S save · F5 reload · Ctrl+Z undo · Ctrl+Y redo · F6 preview ·
 Space play/pause · Ctrl+E export · Esc stop · Ctrl+wheel on the timeline: zoom.
 Playhead (after clicking the timeline or the video): ←/→ one frame · Shift+←/→ 1 s · Ctrl+←/→ 10 s · Home/End.
+Under the preview, TEMPS and IMAGE: the number of the frame under the playhead, from 1 (based on `IPS`), to find
+that frame in the software that rendered it; if the script defines `PAS_IMAGES` (frames rendered every N), the one
+on screen: 1, 11, 21…; with `NB_IMAGES` (number of the last frame), it stays on it during a held ending; with
+`NUMEROS_IMAGES` (list of the rendered frames, the edit starting at the first one: a 150-250 portion…), their real
+numbers, and "noir" in the gaps.
 
 ## The script convention
 

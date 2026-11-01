@@ -834,6 +834,13 @@ class Fenetre(QMainWindow):
         self._valeurs_execution = donnees.get("valeurs", {})
         ips = self._valeurs_execution.get("IPS")
         self.timeline.pas_image = 1 / ips if isinstance(ips, (int, float)) and ips > 0 else 0.04
+        # images rendues de N en N : le compteur suit les rendues ; il s'arrête à la dernière image du film
+        entier = lambda v: isinstance(v, int) and not isinstance(v, bool) and v > 0
+        pas, nb = self._valeurs_execution.get("PAS_IMAGES"), self._valeurs_execution.get("NB_IMAGES")
+        numeros = self._valeurs_execution.get("NUMEROS_IMAGES")     # portions rendues : leurs vrais numéros
+        numeros = numeros if isinstance(numeros, list) and numeros and all(map(entier, numeros)) else None
+        self.transport.set_ips(ips if isinstance(ips, (int, float)) and ips > 0 else None,
+                               pas if entier(pas) else 1, nb if entier(nb) else None, numeros)
         self._appliquer_bloc(reglages.lire(self._texte_analyse or self.editeur.texte()))
         self._afficher_commandes()
         c = commandes[-1] if commandes else None
