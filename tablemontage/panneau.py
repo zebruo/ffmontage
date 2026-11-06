@@ -9,9 +9,10 @@ import html
 import os
 import re
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import QEvent, Qt, Signal
 from PySide6.QtGui import QColor, QFont
-from PySide6.QtWidgets import (QCheckBox, QColorDialog, QDoubleSpinBox, QFileDialog, QFontComboBox, QGridLayout,
+from PySide6.QtWidgets import (QAbstractSlider, QAbstractSpinBox, QApplication, QCheckBox, QColorDialog, QComboBox,
+                               QDoubleSpinBox, QFileDialog, QFontComboBox, QGridLayout,
                                QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QSlider, QSpinBox,
                                QToolButton, QWidget)
 
@@ -126,6 +127,20 @@ class PanneauReglages(QScrollArea):
             self._poseurs[e.nom] = poser
         grille.setRowStretch(ligne, 1)
         self.setWidget(conteneur)
+        # la molette ne change jamais une valeur (un réglage modifié par mégarde en faisant défiler) : elle fait
+        # défiler le panneau ; les curseurs se tirent, les nombres se tapent ou se changent par leurs flèches
+        for w in conteneur.findChildren(QWidget):
+            if isinstance(w, (QAbstractSpinBox, QAbstractSlider, QComboBox)):
+                w.setFocusPolicy(Qt.StrongFocus)        # (pas de focus à la molette)
+                w.installEventFilter(self)
+
+    def eventFilter(self, objet, e):
+        if e.type() == QEvent.Wheel and isinstance(objet, (QAbstractSpinBox, QAbstractSlider, QComboBox)):
+            barre = self.verticalScrollBar()            # le panneau défile à la place
+            crans = e.angleDelta().y() / 120
+            barre.setValue(barre.value() - round(crans * QApplication.wheelScrollLines() * barre.singleStep()))
+            return True
+        return super().eventFilter(objet, e)
 
     def _emettre(self, nom, valeur):
         self.modifie.emit({nom: valeur})

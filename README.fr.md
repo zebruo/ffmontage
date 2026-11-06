@@ -36,14 +36,24 @@ Onglets : **Graphe** (entrées, chaînes de filtres et sortie de la commande ffm
 ## Nouveau projet
 
 Mettre les vidéos, photos et la musique dans un dossier (« été 2026 »), puis **Fichier → Nouveau projet…** (Ctrl+N)
-et choisir ce dossier. La table y écrit « été 2026 film.py », copie de `modeles/film.py` :
+et choisir ce dossier. Une fenêtre montre ce que contient le dossier et propose les premiers choix : taille de
+l'image, cadence, durée des photos, fondu, animations, titre, son des vidéos, musique (tout reste modifiable dans le
+panneau). La table écrit alors « été 2026 film.py », copie de `modeles/film.py` avec ces choix :
 
 - les vidéos et photos du dossier et de ses sous-dossiers (sauf ceux qui commencent par `.` ou `_`), dans l'ordre
   alphabétique de leur nom (numéroter : `01 …`, `02 …`), enchaînées par un fondu ; chacune mise à la taille du film
   (bandes de `COULEUR_FOND` si sa forme diffère) ;
-- un titre au début (texte, police, taille, couleur, position, temps) ;
-- la première musique du dossier, ou celle de `MUSIQUE`, avec volume, retard et fondu final ;
-- le film « été 2026_film.mp4 » dans le dossier.
+- les animations : une suite d'au moins `SUITE_MIN` images numérotées de même nom (`rendu_0001.png`…, en .png, .tif,
+  .bmp ou .webp ; les .jpg restent des photos) forme un seul plan, à `SUITE_IPS` images/s ; s'il manque des images,
+  chacune dure jusqu'à la suivante. Si le film commence par une animation à sa cadence, le compteur IMAGE donne ses
+  numéros ;
+- un titre au début (texte, police, taille, couleur, position, temps ; vide : pas de titre) ;
+- le son des vidéos (`SON_VIDEOS`, `VOLUME_VIDEOS`), en fondu avec elles ;
+- toutes les musiques du dossier enchaînées en fondu (ou celle de `MUSIQUE`), reprises si elles sont plus courtes
+  que le film (`MUSIQUE_BOUCLE`), baissées pendant le son des vidéos (`MUSIQUE_SOUS_VIDEOS`), avec volume, retard et
+  fondu final ;
+- le film « été 2026_film.mp4 » dans le dossier. « Résultats du script » dans le panneau : la durée du film, les
+  plans trouvés, les vidéos dont le son est gardé, les musiques utilisées.
 
 Des médias ajoutés ensuite : F5 pour relire. Le script est un point de départ, à modifier dans l'onglet Script.
 
@@ -55,11 +65,12 @@ Des médias ajoutés ensuite : F5 pour relire. Le script est un point de départ
 Raccourcis : Ctrl+N nouveau projet · Ctrl+O ouvrir · Ctrl+S enregistrer · F5 recharger · Ctrl+Z annuler · Ctrl+Y rétablir · F6 aperçu · Espace lecture/pause · Ctrl+E exporter · Échap arrêter ·
 Ctrl+molette sur la timeline : zoom.
 Tête de lecture (après un clic sur la timeline ou la vidéo) : ←/→ une image · Maj+←/→ 1 s · Ctrl+←/→ 10 s ·
-Début/Fin. Sous l'aperçu, TEMPS et IMAGE : le numéro de l'image sous la tête, à partir de 1 (d'après `IPS`), pour
+Début/Fin. Sous l'aperçu, DURÉE et IMAGE : le numéro de l'image sous la tête, à partir de 1 (d'après `IPS`), pour
 retrouver l'image dans le logiciel qui l'a rendue ; si le script définit `PAS_IMAGES` (images rendues de N en N),
 celle qui est à l'écran : 1, 11, 21… ; avec `NB_IMAGES` (numéro de la dernière image), il reste sur elle pendant
 une fin tenue ; avec `NUMEROS_IMAGES` (liste des images rendues, le montage commençant à la première : une portion
-150-250…), leurs vrais numéros, et « noir » dans les trous.
+150-250…), leurs vrais numéros, et « noir » dans les trous ; avec `DEBUT_IMAGES` (moment de la timeline, en
+secondes, où apparaît la première image, après un titre), il compte à partir de là et montre « titre » avant.
 
 ## La convention du script
 
@@ -162,7 +173,7 @@ la GPL (indiquer où trouver les sources de ffmpeg).
 | `tablemontage/ffmpeg_analyse.py` | analyse d'une commande ffmpeg, commande d'aperçu |
 | `tablemontage/son.py` | formes d'onde des sons |
 | `tablemontage/taches.py` | processus en arrière-plan (lanceur, ffmpeg) |
-| `tablemontage/projet.py`, `modeles/film.py` | « Nouveau projet » et son script de départ |
+| `tablemontage/projet.py`, `tablemontage/dialogue_projet.py`, `modeles/film.py` | « Nouveau projet », sa fenêtre d'options et son script de départ |
 | `tablemontage/chemins.py` | chemins valables en sources comme en exécutable |
 | `tablemontage/modules_scripts.py` | modules embarqués dans l'exécutable pour les scripts de film |
 | `icones/`, `tablemontage/icones.py` | icônes SVG 16×16 en `currentColor` (style du mixeur), colorées au chargement |

@@ -1,4 +1,4 @@
-"""Transport sous l'aperçu, en flat design (comme le mixeur) : les afficheurs TEMPS et IMAGE et les boutons début,
+"""Transport sous l'aperçu, en flat design (comme le mixeur) : les afficheurs DURÉE et IMAGE et les boutons début,
 recul, stop, lecture/pause, avance, boucle."""
 import bisect
 
@@ -57,7 +57,8 @@ class Transport(QWidget):
 
         # le numéro de l'image sous la tête, compté depuis 1 (comme les images rendues : image_0001…) ; rendu de N en N,
         # celui de l'image rendue à l'écran (1, 11, 21…)
-        self._ips, self._pas, self._nb, self._numeros, self._t = None, 1, None, [], 0.0
+        # (DEBUT_IMAGES : les images ne commencent qu'à ce moment de la timeline, après un titre ; avant : « titre »)
+        self._ips, self._pas, self._nb, self._numeros, self._debut, self._t = None, 1, None, [], 0.0, 0.0
         self.image = QLabel("—")
         self.image.setObjectName("image")
         self.image.setFont(police)
@@ -67,7 +68,8 @@ class Transport(QWidget):
         self.image.setToolTip("Numéro de l'image sous la tête de lecture, à partir de 1 (IPS du script) ; "
                               "images rendues de N en N (PAS_IMAGES du script) : celle qui est à l'écran ; "
                               "après la dernière image (NB_IMAGES du script), reste sur elle ; portions rendues "
-                              "(NUMEROS_IMAGES du script) : leurs vrais numéros, « noir » entre elles")
+                              "(NUMEROS_IMAGES du script) : leurs vrais numéros, « noir » entre elles ; images qui "
+                              "commencent après un titre (DEBUT_IMAGES du script, en secondes) : « titre » avant")
 
         boutons = QWidget()
         h = QHBoxLayout(boutons)
@@ -111,7 +113,7 @@ class Transport(QWidget):
         ligne.setContentsMargins(6, 4, 6, 4)
         ligne.setSpacing(14)
         ligne.addStretch(1)
-        ligne.addWidget(_bloc("TEMPS", self.temps))
+        ligne.addWidget(_bloc("DURÉE", self.temps))
         ligne.addWidget(_bloc("IMAGE", self.image))
         ligne.addWidget(_bloc("TRANSPORT", boutons))
         ligne.addStretch(1)
@@ -124,6 +126,10 @@ class Transport(QWidget):
         # en millisecondes, pas d'une image cumulé par les flèches
         if not self._ips:
             self.image.setText("—")
+            return
+        t -= self._debut                    # temps depuis l'apparition de la première image
+        if t * self._ips + 0.05 < 0:
+            self.image.setText("titre")
             return
         if self._numeros:
             # les images rendues : le montage commence à la première ; chacune reste PAS images, puis noir
@@ -138,12 +144,15 @@ class Transport(QWidget):
             n = min(n, self._nb - 1)        # dernière image tenue (fin du film) : le compteur reste sur elle
         self.image.setText(f"{n - n % self._pas + 1}")
 
-    def set_ips(self, ips, pas=1, nb=None, numeros=None):
+    def set_ips(self, ips, pas=1, nb=None, numeros=None, debut=0.0):
         """Images par seconde du film (variable IPS du script), None si inconnues : l'afficheur IMAGE montre « — » ;
         `pas` : images rendues de pas en pas (variable PAS_IMAGES), l'afficheur montre celle qui est à l'écran ;
         `nb` : numéro de la dernière image du film (variable NB_IMAGES), au-delà l'afficheur reste sur elle ;
-        `numeros` : numéros des images rendues (variable NUMEROS_IMAGES), le montage commençant à la première."""
+        `numeros` : numéros des images rendues (variable NUMEROS_IMAGES), le montage commençant à la première ;
+        `debut` : moment de la timeline où apparaît la première image (variable DEBUT_IMAGES, en secondes), après
+        un titre ; avant, l'afficheur montre « titre »."""
         self._ips, self._pas, self._nb, self._numeros = ips, max(1, pas), nb, sorted(numeros or [])
+        self._debut = max(0.0, debut)
         self.set_temps(self._t)
 
     def set_lecture(self, en_cours):

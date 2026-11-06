@@ -39,14 +39,22 @@ full ffmpeg command, readable), **Journal** (log: messages from the script, from
 ## New project
 
 Put the videos, photos and music in a folder (« été 2026 »), then **Fichier → Nouveau projet…** (File → New project,
-Ctrl+N) and choose that folder. ffmontage writes « été 2026 film.py » into it, a copy of `modeles/film.py`:
+Ctrl+N) and choose that folder. A window shows what the folder contains and offers the first choices: frame size,
+frame rate, photo duration, crossfade, animations, title, video sound, music (all can be changed later in the panel).
+ffmontage then writes « été 2026 film.py » into it, a copy of `modeles/film.py` with these choices:
 
 - the videos and photos of the folder and its subfolders (except those starting with `.` or `_`), in alphabetical
   order of their names (number them: `01 …`, `02 …`), linked by crossfades; each one fitted to the film size (bars of
   `COULEUR_FOND` if its shape differs);
-- a title at the start (text, font, size, colour, position, timing);
-- the first music file of the folder, or the one in `MUSIQUE`, with volume, delay and final fade;
-- the film « été 2026_film.mp4 » in the folder.
+- animations: a run of at least `SUITE_MIN` numbered frames with the same name (`rendu_0001.png`…, in .png, .tif, .bmp
+  or .webp; .jpg files stay photos) becomes a single shot at `SUITE_IPS` frames/s; missing frames are covered by the
+  previous one. If the film starts with an animation at its own rate, the IMAGE counter shows its frame numbers;
+- a title at the start (text, font, size, colour, position, timing; empty: no title);
+- the sound of the videos (`SON_VIDEOS`, `VOLUME_VIDEOS`), faded with them;
+- all the music files of the folder chained with crossfades (or the one in `MUSIQUE`), repeated if shorter than the
+  film (`MUSIQUE_BOUCLE`), lowered under the videos' sound (`MUSIQUE_SOUS_VIDEOS`), with volume, delay and final fade;
+- the film « été 2026_film.mp4 » in the folder. "Résultats du script" in the panel: the film's duration, the shots
+  found, the videos whose sound is kept, the music used.
 
 Media added later: F5 to re-read. The script is a starting point, to be edited in the Script tab.
 
@@ -58,11 +66,12 @@ Media added later: F5 to re-read. The script is a starting point, to be edited i
 Shortcuts: Ctrl+N new project · Ctrl+O open · Ctrl+S save · F5 reload · Ctrl+Z undo · Ctrl+Y redo · F6 preview ·
 Space play/pause · Ctrl+E export · Esc stop · Ctrl+wheel on the timeline: zoom.
 Playhead (after clicking the timeline or the video): ←/→ one frame · Shift+←/→ 1 s · Ctrl+←/→ 10 s · Home/End.
-Under the preview, TEMPS and IMAGE: the number of the frame under the playhead, from 1 (based on `IPS`), to find
+Under the preview, DURÉE and IMAGE: the number of the frame under the playhead, from 1 (based on `IPS`), to find
 that frame in the software that rendered it; if the script defines `PAS_IMAGES` (frames rendered every N), the one
 on screen: 1, 11, 21…; with `NB_IMAGES` (number of the last frame), it stays on it during a held ending; with
 `NUMEROS_IMAGES` (list of the rendered frames, the edit starting at the first one: a 150-250 portion…), their real
-numbers, and "noir" in the gaps.
+numbers, and "noir" in the gaps; with `DEBUT_IMAGES` (time on the timeline, in seconds, when the first frame
+appears, after a title), it counts from there and shows "titre" before it.
 
 ## The script convention
 
@@ -165,7 +174,7 @@ ffmpeg's sources).
 | `tablemontage/ffmpeg_analyse.py` | analysis of an ffmpeg command, preview command |
 | `tablemontage/son.py` | sound waveforms |
 | `tablemontage/taches.py` | background processes (launcher, ffmpeg) |
-| `tablemontage/projet.py`, `modeles/film.py` | « New project » and its starter script |
+| `tablemontage/projet.py`, `tablemontage/dialogue_projet.py`, `modeles/film.py` | « New project », its options window and its starter script |
 | `tablemontage/chemins.py` | paths valid from sources and from the executable |
 | `tablemontage/modules_scripts.py` | modules bundled in the executable for film scripts |
 | `icones/`, `tablemontage/icones.py` | 16×16 SVG icons in `currentColor`, coloured when loaded |

@@ -9,12 +9,13 @@ import time
 from PySide6.QtCore import QEvent, QFileSystemWatcher, QSettings, Qt, QTimer, QUrl
 from PySide6.QtGui import QAction, QDesktopServices, QFont, QKeySequence, QShortcut
 from PySide6.QtMultimedia import QAudioOutput, QMediaDevices, QMediaPlayer
-from PySide6.QtWidgets import (QApplication, QComboBox, QFileDialog, QHBoxLayout, QLabel, QMainWindow, QMessageBox, QPlainTextEdit,
+from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QFileDialog, QHBoxLayout, QLabel, QMainWindow, QMessageBox, QPlainTextEdit,
                                QProgressBar,
                                QScrollArea, QSplitter, QTabBar, QTabWidget, QTreeWidget,
                                QTreeWidgetItem, QVBoxLayout, QWidget)
 
 from . import VERSION, chemins, ffmpeg_analyse, fichier_texte, projet, reglages, son
+from .dialogue_projet import DialogueProjet
 from .editeur import EditeurScript
 from .fichiers import EXT_TEXTE, EditeurFichier, OngletFichiers
 from .icones import icone
@@ -495,17 +496,22 @@ class Fenetre(QMainWindow):
             return
         if self.chemin and not self._confirmer_abandon("créer un nouveau projet"):
             return
+        trouve = projet.inventaire(dossier)
+        dialogue = DialogueProjet(os.path.basename(os.path.normpath(dossier)), trouve, self)
+        if dialogue.exec() != QDialog.Accepted:
+            return
         try:
-            script = projet.creer(dossier)
-        except OSError as e:
+            script = projet.creer(dossier, dialogue.options())
+        except (OSError, ValueError) as e:
             QMessageBox.warning(self, "Nouveau projet", f"Le script n'a pas pu être écrit :\n{e}")
             return
         self._journal(f"Script de départ écrit : {script}", source="nouveau projet :")
         self.ouvrir(script)
-        videos, photos, sons = projet.inventaire(dossier)
-        if videos or photos or sons:
+        videos, photos, sons, animations = trouve
+        if any(trouve):
             self._message(f"Projet « {os.path.basename(dossier)} » créé : {videos} vidéo(s), {photos} photo(s), "
-                          f"{sons} musique(s) dans le dossier. Fichiers ajoutés plus tard : F5 pour relire.")
+                          f"{animations} animation(s), {sons} musique(s) dans le dossier. "
+                          f"Fichiers ajoutés plus tard : F5 pour relire.")
         else:
             self._message(f"Projet « {os.path.basename(dossier)} » créé. Le dossier est vide : ajoutez-y vidéos, "
                           f"photos et musique, puis F5 pour relire.")
@@ -559,6 +565,13 @@ class Fenetre(QMainWindow):
         self.editeur.charger(texte)
         self._t_analyse.stop()
         self._analyser_texte()
+        # le script est réexécuté même s'il n'a pas changé : il relit le dossier (fichiers ajoutés depuis), les
+        # images rendues, les fichiers qu'il lit…
+        if self._texte_analyse == texte:            # (script invalide : l'erreur est déjà montrée)
+            self._texte_capture = None
+            self.l_apercu.setText("aperçu périmé" if self._apercu_fichier else "")
+            self._t_capture.stop()
+            self._lancer_capture()
         if self.bloc and not self.bloc.trouve:
             self._journal("Pas de bloc « # ── RÉGLAGES » : seule l'analyse de la commande ffmpeg sera affichée.")
 
@@ -839,8 +852,10 @@ class Fenetre(QMainWindow):
         pas, nb = self._valeurs_execution.get("PAS_IMAGES"), self._valeurs_execution.get("NB_IMAGES")
         numeros = self._valeurs_execution.get("NUMEROS_IMAGES")     # portions rendues : leurs vrais numéros
         numeros = numeros if isinstance(numeros, list) and numeros and all(map(entier, numeros)) else None
+        debut = self._valeurs_execution.get("DEBUT_IMAGES")        # après un titre : la première image
+        debut = debut if isinstance(debut, (int, float)) and not isinstance(debut, bool) and debut > 0 else 0.0
         self.transport.set_ips(ips if isinstance(ips, (int, float)) and ips > 0 else None,
-                               pas if entier(pas) else 1, nb if entier(nb) else None, numeros)
+                               pas if entier(pas) else 1, nb if entier(nb) else None, numeros, debut)
         self._appliquer_bloc(reglages.lire(self._texte_analyse or self.editeur.texte()))
         self._afficher_commandes()
         c = commandes[-1] if commandes else None
